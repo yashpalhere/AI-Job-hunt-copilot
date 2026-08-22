@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import auth,job
+from app.routers import auth,job,resume
 app = FastAPI(
     title="AI JOB HUNT COPILOT",
     version="1.0.0"
@@ -10,3 +10,4 @@ def root():
     return {"message":"AI Job Hunt Copilot API is running!"}
 app.include_router(auth.router)
 app.include_router(job.router)
+app.include_router(resume.router)
