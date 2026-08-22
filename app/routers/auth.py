@@ -23,7 +23,7 @@ def signup( user: UserCreate, db : Session = Depends(get_db)):
     new_user = User(
         email = user.email,
         hashed_pass = hashed_password
-    )
+    )   
     # now we can use db.add command
     db.add(new_user)
     db.commit()
