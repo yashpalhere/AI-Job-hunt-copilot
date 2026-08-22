@@ -10,3 +10,4 @@ class Resume(Base):
     parsed_skills = Column(JSON)
     parsed_experience_summary = Column(Text)
     created_at = Column(DateTime(timezone=True),default= lambda : datetime.now(timezone.utc),nullable=False)
+    updated_at = Column(DateTime(timezone=True),default=lambda: datetime.now(timezone.utc),onupdate=lambda: datetime.now(timezone.utc),nullable=False)

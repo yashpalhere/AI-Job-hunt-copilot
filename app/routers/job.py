@@ -8,6 +8,7 @@ from app.services.job_service import parse_job
 from app.services.matching_service import calculate_job_match
 from app.models.resume import Resume
 from app.schemas.job import JobMatch
+from datetime import datetime,timezone
 router = APIRouter(
     prefix="/jobs",
     tags=['Jobs']
@@ -67,6 +68,8 @@ def deleteJob(job_id = int, current_user = Depends(get_current_user),db: Session
 
 @router.post("/{job_id}/match",response_model= JobMatch)
 def match_job(job_id : int, current_user = Depends(get_current_user),db:Session= Depends(get_db)):
+
+
     user_job = db.query(Job).filter(Job.id == job_id,Job.user_id == current_user.id).first()
     if not user_job:
         raise HTTPException(status_code=404, detail="Job not found")
@@ -74,9 +77,21 @@ def match_job(job_id : int, current_user = Depends(get_current_user),db:Session=
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found. Upload a resume first. ")
 
+    if (user_job.match_computed_at is not None and user_job.match_computed_at >= resume.updated_at):
+        return JobMatch(
+            match_score=user_job.match_score,
+            matched_skills=user_job.matched_skills,
+            missing_skills=user_job.missing_skills,
+            explanation=user_job.match_explanation
+        )
     job_match = calculate_job_match(resume.parsed_skills or [],resume.parsed_experience_summary,user_job.role,user_job.parsed_skills or [],user_job.jd_text)
 
     user_job.match_score = job_match.match_score
+    user_job.matched_skills = job_match.matched_skills
+    user_job.missing_skills = job_match.missing_skills
+    user_job.match_explanation = job_match.explanation
+    user_job.match_computed_at = datetime.now(timezone.utc)
+
     db.commit()
     db.refresh(user_job)
 
