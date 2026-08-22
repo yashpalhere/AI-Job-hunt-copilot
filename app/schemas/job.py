@@ -32,3 +32,12 @@ class JobResponse(BaseModel):
     created_at : datetime
     updated_at : datetime
     model_config = ConfigDict(from_attributes = True)
+
+class JobParsed(BaseModel):
+    required_skills: list[str]
+
+class JobMatch(BaseModel):
+    match_score: float
+    matched_skills: list[str]
+    missing_skills: list[str]
+    explanation: str
