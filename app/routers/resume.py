@@ -5,6 +5,7 @@ from app.models.resume import Resume
 from sqlalchemy.orm import Session
 from app.core.security import get_current_user
 from app.services.resume_service import extract_resume_text,parse_resume
+from app.services.embedding_service import generate_resume_embeddings
 router = APIRouter(
     prefix="/resume",
     tags=['Resume']
@@ -25,6 +26,8 @@ def uploadResume(resume : UploadFile = File(...),db: Session = Depends(get_db),c
         db.add(new_resume)
         db.commit()
         db.refresh(new_resume)
+        #generate embedding by sending extracted_raw_text
+        generate_resume_embeddings(new_resume,db)
         return new_resume
     update_data = {
         "raw_text": extracted_raw_text,
@@ -35,4 +38,7 @@ def uploadResume(resume : UploadFile = File(...),db: Session = Depends(get_db),c
         setattr(existing_resume, key, value)
     db.commit()
     db.refresh(existing_resume)
+
+    #generate embedding by sending extracted_raw_text
+    generate_resume_embeddings(existing_resume,db)
     return existing_resume

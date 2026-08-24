@@ -41,3 +41,6 @@ class JobMatch(BaseModel):
     matched_skills: list[str]
     missing_skills: list[str]
     explanation: str
+
+class DraftedApplication(BaseModel):
+    draft: str

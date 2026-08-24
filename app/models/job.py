@@ -32,6 +32,6 @@ class Job ( Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),nullable= False)
     updated_at = Column(DateTime(timezone=True),default= lambda: datetime.now(timezone.utc) , onupdate=lambda: datetime.now(timezone.utc),nullable=False)
     matched_skills = Column(JSON)
-    missing_skills = Column(JSON)
+    missing_skills = Column(JSON) 
     match_explanation = Column(Text)
     match_computed_at = Column(DateTime(timezone=True))

@@ -9,6 +9,8 @@ from app.services.matching_service import calculate_job_match
 from app.models.resume import Resume
 from app.schemas.job import JobMatch
 from datetime import datetime,timezone
+from app.schemas.llm import RAGResponse,RAGQuery
+from app.services.rag_service import generate_rag_answer,retrieve_relevant_information
 router = APIRouter(
     prefix="/jobs",
     tags=['Jobs']
@@ -96,3 +98,19 @@ def match_job(job_id : int, current_user = Depends(get_current_user),db:Session=
     db.refresh(user_job)
 
     return job_match
+
+@router.post("/{job_id}/ask",response_model=RAGResponse)
+def ask_about_job(job_id :int ,question:RAGQuery, current_user=Depends(get_current_user),db: Session = Depends(get_db)):
+    job = db.query(Job).filter(Job.id == job_id,Job.user_id == current_user.id).first()
+    if not job:
+        raise HTTPException(status_code=404,detail="Job not found")
+    
+    resume = db.query(Resume).filter(Resume.user_id == current_user.id).first()
+    if not resume:
+        raise HTTPException(status_code=404,detail="Resume not found. Upload a resume first.")
+
+    retrieved_chunks = retrieve_relevant_information(resume_id=resume.id,query=question.query,db=db,k=3)
+
+    answer = generate_rag_answer(query=question.query,retrieved_chunks=retrieved_chunks,job=job)
+
+    return answer
