@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import auth,job,resume
+from app.routers import auth,job,resume,agent
 app = FastAPI(
     title="AI JOB HUNT COPILOT",
     version="1.0.0"
@@ -11,3 +11,4 @@ def root():
 app.include_router(auth.router)
 app.include_router(job.router)
 app.include_router(resume.router)
+app.include_router(agent.router)

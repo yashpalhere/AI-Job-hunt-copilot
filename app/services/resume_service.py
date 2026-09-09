@@ -5,7 +5,9 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 load_dotenv()
-llm  = ChatGoogleGenerativeAI(model = "gemini-3.6-flash")
+from app.core.config import GEMINI_MODEL
+
+llm  = ChatGoogleGenerativeAI(model = GEMINI_MODEL)
 struc_llm= llm.with_structured_output(ResumeParsed)
 prompt = ChatPromptTemplate.from_messages([
         ('system' ,"""You are a resume parser.Extract the candidate's technical and professional skillsand provide a concise summary of their experience."""),("human","Resume \n {resume_text}")

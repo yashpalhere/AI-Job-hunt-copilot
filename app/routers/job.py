@@ -11,6 +11,8 @@ from app.schemas.job import JobMatch
 from datetime import datetime,timezone
 from app.schemas.llm import RAGResponse,RAGQuery
 from app.services.rag_service import generate_rag_answer,retrieve_relevant_information
+from app.services.job_service import update_job
+
 router = APIRouter(
     prefix="/jobs",
     tags=['Jobs']
@@ -49,14 +51,10 @@ def getJobWithID( job_id:int,current_user = Depends(get_current_user),db: Sessio
 
 @router.patch("/{job_id}",response_model= JobResponse)
 def updatejob(job_id :int,job_data: JobUpdate,current_user = Depends(get_current_user),db: Session = Depends(get_db)):
-    user_job = db.query(Job).filter(Job.id == job_id,Job.user_id == current_user.id).first()
+    user_job = update_job(job_id,job_data,current_user,db)
     if not user_job:
-        raise HTTPException(status_code=404, detail="Job not found")
-    update_info = job_data.model_dump(exclude_unset=True)
-    for key,value in update_info.items():
-        setattr(user_job,key,value)
-    db.commit()
-    db.refresh(user_job)
+        raise HTTPException(status_code=404,detail="Job not found")
+
     return user_job
 
 @router.delete("/{job_id}")

@@ -9,6 +9,7 @@ from app.schemas.llm import RAGResponse
 from app.models.job import Job
 load_dotenv()
 from app.database.database import session_local
+from app.core.config import GEMINI_MODEL
 
 embedding_model = GoogleGenerativeAIEmbeddings(model="gemini-embedding-2")
 
@@ -57,7 +58,7 @@ def mmr(chunk_embeddings, query_embedding, k=4,lambda_mult = 0.7):
         selected.append(best_index)
         remaining.remove(best_index)
     return selected
-llm = ChatGoogleGenerativeAI(model="gemini-3.6-flash")
+llm = ChatGoogleGenerativeAI(model=GEMINI_MODEL)
 
 
 prompt = ChatPromptTemplate.from_messages([

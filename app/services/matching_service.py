@@ -3,9 +3,10 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from app.schemas.job import JobMatch
 load_dotenv()
+from app.core.config import GEMINI_MODEL
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-3.6-flash")
+llm = ChatGoogleGenerativeAI(model=GEMINI_MODEL)
+
 structured_llm = llm.with_structured_output(JobMatch)
 
 prompt = ChatPromptTemplate.from_messages([
