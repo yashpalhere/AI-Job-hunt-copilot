@@ -12,3 +12,4 @@ class ResumeResponse(BaseModel):
 class ResumeParsed (BaseModel):
     skills : list[str]
     experience_summary: str
+

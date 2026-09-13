@@ -1,0 +1,77 @@
+.home {
+    height: 100vh;
+    overflow-y: auto;
+    padding: 70px 60px;
+    background: #16171d;
+    color: #e5e7eb;
+}
+
+.hero {
+    max-width: 760px;
+}
+
+.eyebrow {
+    margin: 0 0 12px;
+    color: #777981;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+}
+
+.hero h1 {
+    margin: 0;
+    color: #f3f4f6;
+    font-size: 44px;
+    font-weight: 500;
+    letter-spacing: -1px;
+    font-family: var(--heading-font);
+}
+
+.intro {
+    max-width: 680px;
+    margin-top: 18px;
+    color: #9ca3af;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 1000px;
+    margin-top: 55px;
+}
+
+.featureCard {
+    padding: 22px;
+    border: 1px solid #2e303a;
+    border-radius: 10px;
+    background: #1b1c21;
+}
+
+.featureCard h2 {
+    margin: 0 0 10px;
+    color: #e5e7eb;
+    font-size: 17px;
+    font-weight: 600;
+    font-family: var(--heading-font);
+
+}
+
+.featureCard p {
+    margin: 0;
+    color: #8f9098;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+@media (max-width: 800px) {
+    .home {
+        padding: 40px 24px;
+    }
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+}

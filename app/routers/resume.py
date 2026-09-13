@@ -42,3 +42,23 @@ def uploadResume(resume : UploadFile = File(...),db: Session = Depends(get_db),c
     #generate embedding by sending extracted_raw_text
     generate_resume_embeddings(existing_resume,db)
     return existing_resume
+
+
+@router.get("/", response_model=ResumeResponse)
+def getResume(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    existing_resume = (
+        db.query(Resume)
+        .filter(Resume.user_id == current_user.id)
+        .first()
+    )
+
+    if not existing_resume:
+        raise HTTPException(
+            status_code=404,
+            detail="Resume not found"
+        )
+
+    return existing_resume

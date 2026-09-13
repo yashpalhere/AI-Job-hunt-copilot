@@ -1,0 +1,50 @@
+:root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+
+    font: 18px/145% system-ui, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: 0.18px;
+    color: var(--text);
+    background: var(--bg);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    --heading-font: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background: var(--bg);
+}
+
+#root {
+    max-width: none;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+h1,
+h2 {
+    color: var(--text-h);
+}
+
+p {
+    margin: 0;
+}
