@@ -6,7 +6,7 @@ import Sidebar from "./components/sidebar"
 import Jobs from "./components/jobs"
 import Home from "./components/home"
 import Resume from "./components/resume"
-import Signup from "./components/signup"
+import Signup from "./components/Signup"
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(

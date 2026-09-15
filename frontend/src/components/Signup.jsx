@@ -1,5 +1,5 @@
 import { useState } from "react"
-import styles from "./signup.module.css"
+import styles from "./Signup.module.css"
 import { API_URL } from "../api"
 
 function Signup({ onBackToLogin }) {
