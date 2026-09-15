@@ -15,50 +15,116 @@ from app.core.config import GEMINI_MODEL
 llm = ChatGoogleGenerativeAI(model=GEMINI_MODEL)
 struc_llm = llm.with_structured_output(ConfirmationResult)
 
-def update_job_agent(company : str, new_status : AgentJobStatus,current_user, db: Session) -> UpdateJobAgentResult:
-    all_jobs = db.query(Job).filter(Job.user_id == current_user.id,Job.company.ilike(f"%{company}%")).all()
-    if len(all_jobs) == 0: 
-        return UpdateJobAgentResult(
-            message= f"No job matching '{company}' was found."
+def update_job_agent(company: str,new_status: AgentJobStatus,current_user,db: Session,selection: int | None = None) -> UpdateJobAgentResult:
+
+    all_jobs = (
+        db.query(Job)
+        .filter(
+            Job.user_id == current_user.id,
+            Job.company.ilike(f"%{company}%")
         )
-    elif len(all_jobs) == 1:
-        job = all_jobs[0]
+        .all()
+    )
+
+    if len(all_jobs) == 0:
+        return UpdateJobAgentResult(
+            message=f"No job matching '{company}' was found."
+        )
+
+    # If the user selected an option from the previously displayed list
+    if selection is not None:
+
+        if selection < 1 or selection > len(all_jobs):
+            return UpdateJobAgentResult(
+                message=(
+                    f"Invalid selection. Please choose a number from "
+                    f"1 to {len(all_jobs)}."
+                ),
+                jobs=[
+                    JobMatch(
+                        job_id=job.id,
+                        company=job.company,
+                        role=job.role,
+                        status=AgentJobStatus(job.status.value)
+                    )
+                    for job in all_jobs
+                ]
+            )
+
+        # Convert option number -> actual job
+        job = all_jobs[selection - 1]
+
         pending_action = PendingAction(
             action="update_job",
-            job_id= job.id,
-            new_status= new_status
+            job_id=job.id,
+            new_status=new_status
         )
+
         job_match = JobMatch(
-            job_id= job.id,
+            job_id=job.id,
             company=job.company,
-            role= job.role,
-            status= AgentJobStatus(job.status.value)
+            role=job.role,
+            status=AgentJobStatus(job.status.value)
         )
+
         return UpdateJobAgentResult(
-           message=(
+            message=(
+                f"You selected {job.company} — {job.role} "
+                f"(Job ID: {job.id}). "
+                f"Current status is {job.status.value}. "
+                f"Should I change it to {new_status.value}?"
+            ),
+            jobs=[job_match],
+            pending_action=pending_action
+        )
+
+    # Exactly one matching job
+    if len(all_jobs) == 1:
+
+        job = all_jobs[0]
+
+        pending_action = PendingAction(
+            action="update_job",
+            job_id=job.id,
+            new_status=new_status
+        )
+
+        job_match = JobMatch(
+            job_id=job.id,
+            company=job.company,
+            role=job.role,
+            status=AgentJobStatus(job.status.value)
+        )
+
+        return UpdateJobAgentResult(
+            message=(
                 f"I found one matching job: {job.company} — {job.role}. "
                 f"Current status is {job.status.value}. "
                 f"Should I change it to {new_status.value}?"
             ),
-            jobs= [job_match],
-            pending_action= pending_action
-        )
-    else:
-        job_matches =[]
-        for job in all_jobs:
-            job_match = JobMatch(
-                job_id= job.id,
-                company=job.company,
-                role= job.role,
-                status= AgentJobStatus(job.status.value)
-            )
-            job_matches.append(job_match)
-        return UpdateJobAgentResult(
-            message=f"I found {len(all_jobs)} jobs matching '{company}'. "
-                    "Please select which one you want to update.",
-            jobs= job_matches
+            jobs=[job_match],
+            pending_action=pending_action
         )
 
+    # Multiple matching jobs
+    job_matches = []
+
+    for job in all_jobs:
+        job_match = JobMatch(
+            job_id=job.id,
+            company=job.company,
+            role=job.role,
+            status=AgentJobStatus(job.status.value)
+        )
+        job_matches.append(job_match)
+
+    return UpdateJobAgentResult(
+        message=(
+            f"I found {len(all_jobs)} jobs matching '{company}'. "
+            "Please select one by its option number."
+        ),
+        jobs=job_matches
+    )
 def confirm_job_update(pending_action: PendingAction,current_user,db: Session):
     job_data = JobUpdate(
         status=JobStatus(pending_action.new_status.value)

@@ -7,19 +7,40 @@ from app.models.job import Job
 from app.models.resume import Resume
 def create_agent_tools (db ,current_user):
     @tool
-    def job_query_info( company : str, new_status : AgentJobStatus):
+    def job_query_info(company: str,new_status: AgentJobStatus,selection: int | None = None):
         """
         Find the user's job matching the company and prepare information
-        for a possible status update. This tool does not modify the job.
-        It returns matching job information and, when there is exactly
-        one match, a pending action that requires user confirmation.
+        for a possible status update.
+
+        On the first call, omit selection.
+
+        If multiple jobs are returned and the user then selects an option
+        number such as 1, 2, or 3, pass that number as selection.
+
+        IMPORTANT:
+        selection is the POSITION in the previously displayed list,
+        NOT the database job_id.
+
+        Example:
+        If the tool previously returned:
+
+        1. Backend Engineer (Job ID: 6)
+        2. AI Engineer Intern (Job ID: 1)
+
+        and the user says "1", call this tool with:
+        selection=1
+
+        This resolves to Job ID 6.
         """
+
         result = update_job_agent(
-            company= company,
-            new_status= new_status,
-            current_user= current_user,
+            company=company,
+            new_status=new_status,
+            selection=selection,
+            current_user=current_user,
             db=db
         )
+
         return result.model_dump()
 
     @tool
