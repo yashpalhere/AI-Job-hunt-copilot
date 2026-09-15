@@ -1,21 +1,23 @@
 import { useState } from "react"
-import styles from "./login.module.css"
+import styles from "./signup.module.css"
 import { API_URL } from "../api"
 
-function Login({ onLogin, onSignup }) {
+function Signup({ onBackToLogin }) {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
+    const [success, setSuccess] = useState("")
 
-    async function handleUserInput(event) {
+    async function handleSignup(event) {
         event.preventDefault()
 
         setLoading(true)
         setError("")
+        setSuccess("")
 
         try {
-            const response = await fetch(`${API_URL}/auth/login`, {
+            const response = await fetch(`${API_URL}/auth/signup`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -29,15 +31,12 @@ function Login({ onLogin, onSignup }) {
             const data = await response.json()
 
             if (!response.ok) {
-                throw new Error(
-                    data.detail || "Invalid email or password"
-                )
+                throw new Error(data.detail || "Signup failed")
             }
 
-            localStorage.setItem("access_token", data.access_token)
-            localStorage.setItem("token_type", data.token_type)
-
-            onLogin()
+            setSuccess("Account created successfully. You can now log in.")
+            setEmail("")
+            setPassword("")
         } catch (error) {
             setError(error.message)
         } finally {
@@ -50,13 +49,13 @@ function Login({ onLogin, onSignup }) {
             <div className={styles.card}>
                 <p className={styles.eyebrow}>AI JOB HUNT COPILOT</p>
 
-                <h1>Welcome Back</h1>
+                <h1>Create Account</h1>
 
                 <p className={styles.subtitle}>
-                    Sign in to continue your job hunt.
+                    Start building your job hunt workspace.
                 </p>
 
-                <form onSubmit={handleUserInput}>
+                <form onSubmit={handleSignup}>
                     <label>Email</label>
                     <input
                         type="email"
@@ -81,24 +80,26 @@ function Login({ onLogin, onSignup }) {
                         </p>
                     )}
 
+                    {success && (
+                        <p className={styles.success}>
+                            {success}
+                        </p>
+                    )}
+
                     <button type="submit" disabled={loading}>
-                        {loading ? "Signing in..." : "Login"}
+                        {loading ? "Creating account..." : "Sign Up"}
                     </button>
                 </form>
 
-                <p className={styles.signupText}>
-                    Don't have an account?
-                </p>
-
                 <button
-                    className={styles.signupButton}
-                    onClick={onSignup}
+                    className={styles.backButton}
+                    onClick={onBackToLogin}
                 >
-                    Create account
+                    ← Back to login
                 </button>
             </div>
         </div>
     )
 }
 
-export default Login
+export default Signup

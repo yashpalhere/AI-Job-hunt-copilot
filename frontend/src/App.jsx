@@ -6,6 +6,7 @@ import Sidebar from "./components/sidebar"
 import Jobs from "./components/jobs"
 import Home from "./components/home"
 import Resume from "./components/resume"
+import Signup from "./components/signup"
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -13,8 +14,10 @@ function App() {
     )
 
     const [activePage, setActivePage] = useState("home")
+    const [showSignup, setShowSignup] = useState(false)
 
     function handleLogin() {
+        setShowSignup(false)
         setIsLoggedIn(true)
     }
 
@@ -59,7 +62,20 @@ function App() {
     }, [isLoggedIn])
 
     if (!isLoggedIn) {
-        return <Login onLogin={handleLogin} />
+        if (showSignup) {
+            return (
+                <Signup
+                    onBackToLogin={() => setShowSignup(false)}
+                />
+            )
+        }
+
+        return (
+            <Login
+                onLogin={handleLogin}
+                onSignup={() => setShowSignup(true)}
+            />
+        )
     }
 
     return (
