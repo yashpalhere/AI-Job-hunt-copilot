@@ -1,4 +1,4 @@
-export const API_URL = "http://localhost:8000"
+export const API_URL = "https://ai-job-hunt-copilot-mgno.onrender.com"
 export async function apiFetch(url, options = {}) {
     const token = localStorage.getItem("access_token")
 
